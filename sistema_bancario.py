@@ -48,6 +48,10 @@ class PessoaFisica(Cliente):
         self.data_nascimento = data_nascimento
         self.cpf = cpf
     
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}: ({self.cpf})>"
+
+
 class Conta:
     def __init__(self, numero, cliente):
         self._saldo = 0
@@ -135,6 +139,9 @@ class ContaCorrente(Conta):
             return super().sacar(valor)
         return False
     
+    def __repr__(self):
+        return f"<{self.__class__.__name__}: ('{self.agencia}', '{self.numero}', '{self.cliente.nome}')>"
+    
     def __str__(self):
         return f"""\
             Agência:\t{self.agencia}
@@ -218,7 +225,14 @@ class Deposito(Transacao):
 def log_transacao(func):
     def envelope(*args, **kwargs):
         resultado = func(* args, ** kwargs)
-        print(f"{datetime.now()}: {func.__name__.upper()}")
+        data_hora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        with open('log.txt', 'a') as arquivo:
+            arquivo.write(
+            f"[{data_hora}] Função '{func.__name__}' executada com argumentos {args} e {kwargs}."
+            f"Retornou {resultado}\n"
+            )
+        
         return resultado
     return envelope
 
